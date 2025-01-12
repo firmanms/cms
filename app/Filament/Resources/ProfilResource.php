@@ -46,6 +46,10 @@ class ProfilResource extends Resource
             ->schema([
                 Section::make('Informasi Website')
                 ->schema([
+                    TextInput::make('domain')
+                        ->label('Domain')
+                        ->visible(fn () => Auth::user()->hasRole('super_admin'))
+                        ->columnSpanFull(),
                     TextInput::make('name')
                         ->label('Nama')
                         ->required()

@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Employee;
 use App\Models\Page;
 use App\Models\Post;
+use App\Models\Profil;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Auth;
@@ -13,40 +14,36 @@ class StatsOverview extends BaseWidget
 {
     protected function getStats(): array
     {
-        return [
+        $stats = [
             Stat::make('Total Posts', function () {
                 $user = Auth::user();
-            
-                // Jika super_admin, hitung semua post
-                if (Auth::user()->hasRole('super_admin')) {
-                    return Post::count(); // Total semua post
-                }
-            
-                // Jika user biasa, hitung post berdasarkan iduser
-                return Post::where('iduser', $user->id)->count(); // Total post milik user tertentu
+                return Auth::user()->hasRole('super_admin') 
+                    ? Post::count() // Total all posts for super_admin
+                    : Post::where('iduser', $user->id)->count(); // Posts specific to user
             }),
+
             Stat::make('Total Halaman', function () {
                 $user = Auth::user();
-            
-                // Jika super_admin, hitung semua halaman
-                if (Auth::user()->hasRole('super_admin')) {
-                    return Page::count(); // Total semua halaman
-                }
-            
-                // Jika user biasa, hitung halaman berdasarkan iduser
-                return Page::where('iduser', $user->id)->count(); // Total halaman milik user tertentu
+                return Auth::user()->hasRole('super_admin') 
+                    ? Page::count() // Total all pages for super_admin
+                    : Page::where('iduser', $user->id)->count(); // Pages specific to user
             }),
+
             Stat::make('Data Pegawai', function () {
                 $user = Auth::user();
-            
-                // Jika super_admin, hitung semua pegawai
-                if (Auth::user()->hasRole('super_admin')) {
-                    return Employee::count(); // Total semua pegawai
-                }
-            
-                // Jika user biasa, hitung pegawai berdasarkan iduser
-                return Employee::where('iduser', $user->id)->count(); // Total pegawai milik user tertentu
+                return Auth::user()->hasRole('super_admin') 
+                    ? Employee::count() // Total all employees for super_admin
+                    : Employee::where('iduser', $user->id)->count(); // Employees specific to user
             }),
         ];
+
+        // Add the 'SKPD Pengguna CMS' stat only if the user is a super_admin
+        if (Auth::user()->hasRole('super_admin')) {
+            $stats[] = Stat::make('SKPD Pengguna CMS', function () {
+                return Profil::count(); // Total all SKPD for super_admin
+            });
+        }
+
+        return $stats;
     }
 }
