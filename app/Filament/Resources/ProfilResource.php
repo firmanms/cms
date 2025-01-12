@@ -18,9 +18,11 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Illuminate\Support\Str;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -253,6 +255,10 @@ class ProfilResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('token')
+                    ->label('Token Terakhir')
+                    ->searchable()
+                    ->visible(fn () => Auth::user()->hasRole('super_admin')),
                 
             ])
             ->filters([
@@ -260,6 +266,21 @@ class ProfilResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('generateToken')
+                ->label('Generate Token')
+                ->action(function (Profil $record) {
+                    // Jalankan perintah artisan untuk generate token menggunakan ID profil
+                    Artisan::call('generate:dinas-token', ['id' => $record->id]);
+
+                    // Ambil output dari perintah Artisan
+                    $output = Artisan::output();
+
+                    // Tampilkan pesan sukses di session
+                    session()->flash('success', "Token berhasil dihasilkan untuk Dinas {$record->name}: {$output}");
+                })
+                ->icon('heroicon-o-key') // Ikon tombol aksi
+                ->color('primary')
+                ->visible(fn () => Auth::user()->hasRole('super_admin')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

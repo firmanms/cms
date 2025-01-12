@@ -19,7 +19,9 @@ use Filament\Tables\Actions\DeleteAction;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\Profil;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Actions\Action as ActionsAction;
 use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
 class UserResource extends Resource
@@ -147,6 +149,7 @@ class UserResource extends Resource
                     EditAction::make(),
                     DeleteAction::make()
                 ]),
+                
             ]);
         return $table;
     }

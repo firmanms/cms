@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Sanctum\HasApiTokens;
 
 class Profil extends Model
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens;
 
     protected $guarded = [];
 
@@ -40,6 +41,11 @@ class Profil extends Model
     public function category(): HasMany
     {
         return $this->hashMany(Category::class,'idprofil','id');
+    }
+
+    public function tokenregen(): HasMany
+    {
+        return $this->hasMany(Tokengen::class, 'tokenable_id', 'id');
     }
 
     public function complaint(): HasMany

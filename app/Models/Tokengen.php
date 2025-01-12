@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Laravel\Sanctum\HasApiTokens;
 
-class Post extends Model
+class Tokengen extends Model
 {
-    use HasFactory,HasApiTokens;
+    use HasFactory;
+
+    protected $table ='personal_access_tokens';
 
     protected $guarded = [];
 
@@ -19,12 +20,7 @@ class Post extends Model
     }
 
     public function profil()
-{
-    return $this->belongsTo(Profil::class, 'idprofil');
-}
-
-    public function categories(): BelongsTo
     {
-        return $this->belongsTo(Category::class,'idkategori');
+        return $this->belongsTo(Profil::class, 'tokenable_id');
     }
 }
