@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ComplaintResource\Pages;
 use App\Filament\Resources\ComplaintResource\RelationManagers;
 use App\Models\Complaint;
+use App\Models\Profil;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -40,8 +41,19 @@ class ComplaintResource extends Resource
                 ->schema([
                     Forms\Components\Hidden::make('iduser')
                             ->default(Auth::user()->id),
-                    Forms\Components\Hidden::make('idprofil')
-                            ->default(Auth::user()->id),
+                    Forms\Components\Select::make('idprofil')
+                            ->label('Profil')
+                            ->required()
+                            ->preload()
+                            ->options(function () {
+                                return Profil::all()
+                                    ->mapWithKeys(function ($profil) {
+                                        return [$profil->id => "{$profil->name}"];
+                                    }); // NIP sebagai key, "NIP - Nama" sebagai value
+                            })
+                            ->searchable()
+                            ->visible(fn () => Auth::user()->hasRole('super_admin'))
+                            ->columnSpanFull(),
                     Forms\Components\Radio::make('kotak')
                         ->options([
                             'Tersedia' => 'Tersedia',
