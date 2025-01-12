@@ -63,6 +63,11 @@ class BackPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->navigationGroups([
+                'Publikasi',
+                'Tematik',
+                'Pengaturan',
             ]);
     }
 }

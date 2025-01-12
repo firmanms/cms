@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
+            $table->integer('iduser');
+            $table->integer('idprofil');
+            $table->string('name');
+            $table->boolean('status');
             $table->timestamps();
         });
     }

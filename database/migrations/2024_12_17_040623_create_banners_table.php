@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('banners', function (Blueprint $table) {
             $table->id();
+            $table->integer('iduser');
+            $table->integer('idprofil');
+            $table->string('title');
+            $table->string('url');
+            $table->string('description');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

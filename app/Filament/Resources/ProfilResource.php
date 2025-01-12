@@ -30,6 +30,16 @@ class ProfilResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationLabel = 'Profil';
+
+    protected static ?string $modelLabel = 'Profil';
+
+    protected static ?string $pluralLabel = 'Profil';
+
+    protected static ?string $navigationGroup = 'Pengaturan';
+
+    protected static ?int $navigationSort = 3;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -251,7 +261,25 @@ class ProfilResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->modifyQueryUsing(function (Builder $query) {
+                $profilId = Auth::user()->idprofil;
+                // dd($profilId);
+                
+
+                $roles = Auth::user()->roles->pluck('name'); // Atau metode lain jika berbeda
+
+                $roleNames = $roles->implode(', ');
+                // dd($roleNames);
+                // Cek apakah pengguna memiliki salah satu dari peran yang diizinkan
+                if ($roles->contains('super_admin')) {
+                    // Jika pengguna memiliki peran 'super_admin', kembalikan semua data
+                    return $query;
+                } else {
+                    // Jika pengguna tidak memiliki peran yang sesuai
+                    return $query->where('id', $profilId); // Contoh kondisi tambahan
+                }
+            });
     }
 
     public static function getRelations(): array

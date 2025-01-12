@@ -31,25 +31,28 @@ class AgendaResource extends Resource
 
     protected static ?string $navigationGroup = 'Publikasi';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Agenda Details')
+                Forms\Components\Section::make('Agenda Kegiatan')
                     ->schema([
                         Forms\Components\Hidden::make('iduser')
                             ->default(Auth::user()->id),
                         Forms\Components\Hidden::make('idprofil')
                             ->default(Auth::user()->idprofil),
-                        Forms\Components\TextInput::make('title')
+                            Forms\Components\TextInput::make('title')
                             ->required()
                             ->label('Judul')
                             ->maxLength(255)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function (Set $set, $state) {
-                                $set('slug', Str::slug($state));
+                            ->afterStateUpdated(function (Set $set, $state, $get) {
+                                $idprofil = $get('idprofil');
+                                $tanggal = now()->format('dmy');
+                                $slug = Str::slug($state);
+                                $set('slug', "{$tanggal}-{$idprofil}-{$slug}");
                             }),
                         Forms\Components\TextInput::make('slug')
                             ->required()
@@ -97,26 +100,14 @@ class AgendaResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('title')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('slug')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('published')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('time'),
-                Tables\Columns\TextColumn::make('location')
+                    ->label('Judul')
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('image'),
-                Tables\Columns\IconColumn::make('status')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                Tables\Columns\ToggleColumn::make('status')
+                    ->onColor('success')
+                    ->offColor('danger')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
             ])
             ->filters([
                 //

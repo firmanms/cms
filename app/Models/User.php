@@ -58,4 +58,79 @@ class User extends Authenticatable
     {
         return $this->hashMany(Agenda::class,'iduser','id');
     }
+
+    public function api(): HasMany
+    {
+        return $this->hashMany(Api::class,'iduser','id');
+    }
+
+    public function banner(): HasMany
+    {
+        return $this->hashMany(Banner::class,'iduser','id');
+    }
+
+    public function category(): HasMany
+    {
+        return $this->hashMany(Category::class,'iduser','id');
+    }
+
+    public function complaint(): HasMany
+    {
+        return $this->hashMany(Complaint::class,'iduser','id');
+    }
+
+    public function employee(): HasMany
+    {
+        return $this->hashMany(Employee::class,'iduser','id');
+    }
+
+    public function facilities(): HasMany
+    {
+        return $this->hashMany(Facilities::class,'iduser','id');
+    }
+
+    public function faq(): HasMany
+    {
+        return $this->hashMany(Faq::class,'iduser','id');
+    }
+
+    public function fileupload(): HasMany
+    {
+        return $this->hashMany(Fileupload::class,'iduser','id');
+    }
+
+    public function galery(): HasMany
+    {
+        return $this->hashMany(Galery::class,'iduser','id');
+    }
+
+    public function page(): HasMany
+    {
+        return $this->hashMany(Page::class,'iduser','id');
+    }
+
+    public function post(): HasMany
+    {
+        return $this->hashMany(Post::class,'iduser','id');
+    }
+
+    public function related(): HasMany
+    {
+        return $this->hashMany(Related::class,'iduser','id');
+    }
+
+    public function service(): HasMany
+    {
+        return $this->hashMany(Service::class,'iduser','id');
+    }
+
+    public function slide(): HasMany
+    {
+        return $this->hashMany(Slide::class,'iduser','id');
+    }
+
+    public function widget(): HasMany
+    {
+        return $this->hashMany(Widget::class,'iduser','id');
+    }
 }
