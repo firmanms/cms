@@ -108,5 +108,10 @@ class Profil extends Model
         return $this->hashMany(Widget::class,'idprofil','id');
     }
 
+    public function adjacency(): HasMany
+    {
+        return $this->hashMany(Adjacency::class,'idprofil','id');
+    }
+
     
 }

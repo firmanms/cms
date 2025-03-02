@@ -81,6 +81,18 @@ class AdjacencyResource extends Resource
                                             if ($profilId) {
                                                 // Ambil data dari database untuk select pertama (kondisi internal)
                                                 $data = Page::where('idprofil', $profilId)->pluck('title', 'slug')->toArray();
+                                                // Define manual entries
+                                                $manualEntries = [
+                                                    'statis/skm' => 'SKM',
+                                                    'statis/galeri' => 'Galeri',
+                                                    'statis/blog' => 'Berita',
+                                                    'statis/layanan' => 'Layanan',
+                                                    'statis/sarana' => 'Sarana',
+                                                    'statis/pengaduan' => 'Pengaduan',
+                                                ];
+
+                                                // Merge manual entries with dynamic data
+                                                $data = array_merge($data, $manualEntries);
                                                 $set('dynamicOptions', $data);
                                             } else {
                                                 // Jika profil tidak ditemukan
@@ -102,7 +114,7 @@ class AdjacencyResource extends Resource
                                     })
                                     ->required(),
                                     Forms\Components\Group::make([
-                                        Forms\Components\Select::make('link')
+                                            Forms\Components\Select::make('link')
                                             ->label('Pilih Halaman')
                                             ->options(fn ($get) => $get('dynamicOptions') ?? [])
                                             ->visible(fn ($get) => $get('selectedOption') === 'internal'),

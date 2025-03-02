@@ -61,8 +61,8 @@ class BannerResource extends Resource
                     Forms\Components\Select::make('kategori')
                         ->label('Kategori')
                         ->options([
-                                'Banner' => 'Banner',
-                                'Program Unggulan' => 'Program Unggulan',
+                                'Informasi' => 'Informasi',
+                                'Unggulan' => 'Program Unggulan',
                         ])
                         ->searchable()
                         ->preload()

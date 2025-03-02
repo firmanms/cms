@@ -66,7 +66,7 @@ class GaleryResource extends Resource
                 Forms\Components\Section::make('Gambar')
                 ->schema([
                     Forms\Components\FileUpload::make('image')
-                            ->label('Gambar')
+                            ->label('Gambar Cover')
                             ->image()
                             ->directory('galeri/'.Auth::user()->idprofil)
                             ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {

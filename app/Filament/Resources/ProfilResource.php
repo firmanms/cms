@@ -10,6 +10,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -24,6 +25,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ProfilResource extends Resource
@@ -241,6 +244,52 @@ class ProfilResource extends Resource
                             ->placeholder('Tambah SEO keywords')
                             ->splitKeys(['Enter', ',', ';']) // Split by Enter, comma, or semicolon
                             ->suggestions(['Dinas Pertanian', 'Web', 'Kabupaten Bandung']), // Optional suggestions
+                    ])->columns(2),
+
+                    Section::make('Integrasi')
+                    ->description('Integrasi dengan Aplikasi Lain')
+                    ->schema([
+                        Select::make('ikm_dinas_id')
+                        ->label('Pilih Profil Aplikasi SKM')
+                        ->options(function () {
+                            try {
+                                $path = public_path('showdinasIKM.json'); // Akses file JSON dari folder public
+                                
+                                // Cek apakah file ada
+                                if (!file_exists($path)) {
+                                    \Log::error('File JSON tidak ditemukan: ' . $path);
+                                    return [];
+                                }
+
+                                // Membaca isi file JSON
+                                $json = file_get_contents($path);
+                                $data = json_decode($json, true);
+
+                                // Cek apakah JSON valid
+                                if (json_last_error() !== JSON_ERROR_NONE) {
+                                    \Log::error('Error decoding JSON: ' . json_last_error_msg());
+                                    return [];
+                                }
+
+                                // Cek apakah data tersedia
+                                if (empty($data)) {
+                                    \Log::error('Data JSON kosong.');
+                                    return [];
+                                }
+
+                                // Mengurutkan data berdasarkan nm_dinas secara ascending
+                                usort($data, function ($a, $b) {
+                                    return strcmp($a['nm_dinas'], $b['nm_dinas']);
+                                });
+
+                                return collect($data)->pluck('nm_dinas', 'id');
+                            } catch (\Exception $e) {
+                                \Log::error('Error fetching dinas: ' . $e->getMessage());
+                                return [];
+                            }
+                        })
+                        ->searchable()
+                        ->required(),
                     ])->columns(2),
                 
                 Forms\Components\Toggle::make('status')
