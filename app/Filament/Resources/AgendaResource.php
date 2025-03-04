@@ -58,9 +58,9 @@ class AgendaResource extends Resource
                             ->required()
                             ->readOnly()
                             ->maxLength(255),
-                        Forms\Components\RichEditor::make('description')
-                            ->label('Deskripsi')
-                            ->fileAttachmentsDirectory('attachagenda/'.Auth::user()->idprofil),
+                        Forms\Components\Textarea::make('description')
+                            ->label('Deskripsi'),
+                            // ->fileAttachmentsDirectory('attachagenda/'.Auth::user()->idprofil),
                         Forms\Components\Toggle::make('status')
                             ->onColor('success')
                             ->offColor('danger'),
