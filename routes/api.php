@@ -43,8 +43,8 @@ Route::get('/posts', function (Request $request) {
     $view = Viewer::firstOrCreate(['page' => $dinas->domain],['domain' => $dinas->domain]);
     $view->increment('count'); // Menambah jumlah tampilan
 
-    Log::info('Request Domain: ' . $domain);
-    Log::info('Request Referer: ' . $referer);
+    // Log::info('Request Domain: ' . $domain);
+    // Log::info('Request Referer: ' . $referer);
 
     // dd($domain);
 
@@ -150,9 +150,9 @@ Route::get('/pages', function (Request $request) {
 
     // Cari Dinas berdasarkan domain
     $dinas = Profil::where('domain', $referer)->first();
-    Log::info('Request Domain: ' . $domain);
-    Log::info('Request Referer: ' . $referer);
-    Log::info('Request Referer: ' . $slug);
+    // Log::info('Request Domain: ' . $domain);
+    // Log::info('Request Referer: ' . $referer);
+    // Log::info('Request Referer: ' . $slug);
 
     // dd($domain);
 
@@ -193,9 +193,9 @@ Route::get('/blog', function (Request $request) {
 
     // Cari Dinas berdasarkan domain
     $dinas = Profil::where('domain', $referer)->first();
-    Log::info('Request Domain: ' . $domain);
-    Log::info('Request Referer: ' . $referer);
-    Log::info('Request Referer: ' . $slug);
+    // Log::info('Request Domain: ' . $domain);
+    // Log::info('Request Referer: ' . $referer);
+    // Log::info('Request Referer: ' . $slug);
 
     // dd($domain);
 
@@ -234,6 +234,62 @@ Route::get('/blog', function (Request $request) {
 })
 ->middleware('auth:sanctum');
 
+Route::get('/blogkategori', function (Request $request) {
+    $domain = $request->getHost();    
+    $referer = $request->headers->get('x-custom-header');
+    $slug = $request->headers->get('x-slug-header');
+
+    // Cari Dinas berdasarkan domain
+    $dinas = Profil::where('domain', $referer)->first();
+    // Log::info('Request Domain: ' . $domain);
+    // Log::info('Request Referer: ' . $referer);
+    Log::info('Request Referer: ' . $slug);
+
+    // dd($domain);
+
+    if (!$dinas) {
+        return response()->json(['message' => 'Dinas not found'], 404);
+    }
+
+
+    // Ambil post berdasarkan dinas_id
+    $profil = Profil::where('id', $dinas->id)->first();
+    $menu = Adjacency::where('idprofil', $dinas->id)->first();
+    $categoryfirst = Category::where('name', $slug)->firstOrFail();
+    // $artikel = Post::where('idprofil', $dinas->id)->orderBy('published','desc')->get();
+    // Ambil artikel berdasarkan kategori
+    $artikel = Post::with('categories')
+    ->whereHas('categories', function ($query) use ($categoryfirst) {
+        $query->where('categories.id', $categoryfirst->id);
+    })
+    ->where('idprofil', $dinas->id) // Pastikan $dinas terdefinisi
+    ->orderBy('published', 'desc')
+    ->paginate(4);
+    $artikela=$artikel->toArray();
+    $pageartikel=$referer.'/page/statis/blog';
+    $new_artikel = Post::where('idprofil', $dinas->id)->orderBy('published','desc')->get()->take(5);
+    $category = Category::where('idprofil', $dinas->id)->orderBy('name','asc')->get();
+    // dd($menu);
+        $jsonString = $menu['subject'];
+        $jsonStrings = json_encode($jsonString);
+
+        $menus = json_decode($jsonStrings, true);
+
+    return response()->json([
+        'profil'=>$profil,
+        'menus'=>$menus,
+        'artikel'=>$artikela, 
+        'new_artikel'=>$new_artikel,        
+        'category'=>$category,
+        'base_url' => $pageartikel, // Tambahkan ini
+        'current_page' => $artikel->currentPage(),
+        'last_page' => $artikel->lastPage(),
+        'next_page_url' => $artikel->nextPageUrl(),
+        'prev_page_url' => $artikel->previousPageUrl(),
+        ]);
+})
+->middleware('auth:sanctum');
+
 Route::get('/detailblog', function (Request $request) {
     $domain = $request->getHost();    
     $referer = $request->headers->get('x-custom-header');
@@ -241,9 +297,9 @@ Route::get('/detailblog', function (Request $request) {
 
     // Cari Dinas berdasarkan domain
     $dinas = Profil::where('domain', $referer)->first();
-    Log::info('Request Domain: ' . $domain);
-    Log::info('Request Referer: ' . $referer);
-    Log::info('Request Referer: ' . $slug);
+    // Log::info('Request Domain: ' . $domain);
+    // Log::info('Request Referer: ' . $referer);
+    // Log::info('Request Referer: ' . $slug);
 
     // dd($domain);
 
@@ -283,8 +339,8 @@ Route::get('/galeri', function (Request $request) {
 
     // Cari Dinas berdasarkan domain
     $dinas = Profil::where('domain', $referer)->first();
-    Log::info('Request Domain: ' . $domain);
-    Log::info('Request Referer: ' . $referer);
+    // Log::info('Request Domain: ' . $domain);
+    // Log::info('Request Referer: ' . $referer);
 
     // dd($domain);
 
@@ -320,9 +376,9 @@ Route::get('/detailgaleri', function (Request $request) {
 
     // Cari Dinas berdasarkan domain
     $dinas = Profil::where('domain', $referer)->first();
-    Log::info('Request Domain: ' . $domain);
-    Log::info('Request Referer: ' . $referer);
-    Log::info('Request Referer: ' . $slug);
+    // Log::info('Request Domain: ' . $domain);
+    // Log::info('Request Referer: ' . $referer);
+    // Log::info('Request Referer: ' . $slug);
 
     // dd($domain);
 
@@ -358,8 +414,8 @@ Route::get('/pengaduan', function (Request $request) {
 
     // Cari Dinas berdasarkan domain
     $dinas = Profil::where('domain', $referer)->first();
-    Log::info('Request Domain: ' . $domain);
-    Log::info('Request Referer: ' . $referer);
+    // Log::info('Request Domain: ' . $domain);
+    // Log::info('Request Referer: ' . $referer);
 
     // dd($domain);
 
@@ -392,8 +448,8 @@ Route::get('/layanan', function (Request $request) {
 
     // Cari Dinas berdasarkan domain
     $dinas = Profil::where('domain', $referer)->first();
-    Log::info('Request Domain: ' . $domain);
-    Log::info('Request Referer: ' . $referer);
+    // Log::info('Request Domain: ' . $domain);
+    // Log::info('Request Referer: ' . $referer);
 
     // dd($domain);
 
@@ -426,8 +482,8 @@ Route::get('/sarana',action:  function (Request $request) {
 
     // Cari Dinas berdasarkan domain
     $dinas = Profil::where('domain', $referer)->first();
-    Log::info('Request Domain: ' . $domain);
-    Log::info('Request Referer: ' . $referer);
+    // Log::info('Request Domain: ' . $domain);
+    // Log::info('Request Referer: ' . $referer);
 
     // dd($domain);
 
@@ -459,9 +515,9 @@ Route::get('/skm',action:  function (Request $request) {
     $referer = $request->headers->get('x-custom-header');
 
     // Cari Dinas berdasarkan domain
-    $dinas = Profil::where('domain', 'cmsfront.test')->first();
-    Log::info('Request Domain: ' . $domain);
-    Log::info('Request Referer: ' . $referer);
+    $dinas = Profil::where('domain', $referer)->first();
+    // Log::info('Request Domain: ' . $domain);
+    // Log::info('Request Referer: ' . $referer);
 
     // dd($domain);
 

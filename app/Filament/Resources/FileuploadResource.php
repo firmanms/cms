@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\FileuploadResource\Pages;
 use App\Filament\Resources\FileuploadResource\RelationManagers;
 use App\Models\Fileupload;
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -45,8 +46,40 @@ class FileuploadResource extends Resource
                     Forms\Components\TextInput::make('title')
                         ->required()
                         ->maxLength(255),
+                    Forms\Components\Select::make('kategori')
+                        ->label('Kategori')
+                        ->options([
+                                'Formulir' => 'Formulir',
+                                'Materi' => 'Materi',
+                                'Produk Hukum' => 'Produk Hukum',
+                                'Pengumuman' => 'Pengumuman',
+                                'Lainnya' => 'Lainnya',
+                        ]),
+                        Forms\Components\Select::make('option')
+                        ->options([
+                            'Upload' => 'Upload',
+                            'Url' => 'Link Url',
+                        ])                        
+                        ->reactive()
+                        ->dehydrated(false)
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            // Set state untuk menentukan tampilan elemen
+                            $set('selectedOption', $state);
+                    
+                            // Inisialisasi ulang dynamicOptions jika URL dipilih
+                            if ($state === 'Url') {
+                                $set('dynamicOptions', []); // Bisa digunakan nanti untuk keperluan lain
+                            }
+                        })
+                        ->required(),
+                    
+                    Forms\Components\TextInput::make('url')
+                        ->label('Link Url')
+                        ->visible(fn ($get) => $get('selectedOption') === 'Url')
+                        ->required(fn ($get) => $get('selectedOption') === 'Url') // Wajib jika memilih "Url"
+                        ->url(), // Memastikan input berupa URL yang valid
+                    
                     Forms\Components\FileUpload::make('url')
-                        ->required()
                         ->label('File PDF dan semua format Microsoft Office (Word, Excel, PowerPoint)')
                         ->acceptedFileTypes([
                             'application/pdf', // PDF
@@ -59,8 +92,12 @@ class FileuploadResource extends Resource
                         ])
                         ->directory('fileuploads/' . Auth::user()->idprofil)
                         ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
-                            return now()->timestamp . '-' . $file->getClientOriginalName();
-                    }),
+                            return now()->timestamp . '-' . preg_replace('/[^A-Za-z0-9.\-_]/', '', $file->getClientOriginalName());
+                        })
+                        ->visible(fn (callable $get) => $get('selectedOption') === 'Upload')
+                        ->required(fn (callable $get) => $get('selectedOption') === 'Upload'),
+                    
+                    
                 ])
             ]);
     }
