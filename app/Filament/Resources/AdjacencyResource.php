@@ -6,6 +6,7 @@ use App\Filament\Resources\AdjacencyResource\Pages;
 use App\Filament\Resources\AdjacencyResource\RelationManagers;
 use App\Models\Adjacency;
 use App\Models\Api;
+use App\Models\Category;
 use App\Models\Page;
 use App\Models\Profil;
 use Filament\Forms;
@@ -69,6 +70,7 @@ class AdjacencyResource extends Resource
                                         'linkinternal' => 'URL Internal',
                                         'internal' => 'Halaman',
                                         'external' => 'External',
+                                        'kategori' => 'Kategori Berita',
                                     ])
                                     ->reactive()
                                     ->afterStateUpdated(function ($state, callable $set) {
@@ -89,6 +91,8 @@ class AdjacencyResource extends Resource
                                                     'statis/layanan' => 'Layanan',
                                                     'statis/sarana' => 'Sarana',
                                                     'statis/pengaduan' => 'Pengaduan',
+                                                    'statis/produkhukum' => 'Produk Hukum',
+                                                    'statis/dokumenupload' => 'Dokumen Upload Lainnya',
                                                 ];
 
                                                 // Merge manual entries with dynamic data
@@ -110,6 +114,23 @@ class AdjacencyResource extends Resource
                                                 // Jika profil tidak ditemukan
                                                 $set('dynamicOptions', []);
                                             }
+                                        } elseif ($state === 'kategori') {
+                                            // Ambil profil ID melalui relasi
+                                            $profilId = Auth::user()->idprofil;
+                                        
+                                            if ($profilId) {
+                                                // Ambil data dari database untuk select kedua (kondisi linkinternal)
+                                                $categories  = Category::where('idprofil', $profilId)->pluck('name')->toArray();
+                                                // Modifikasi data untuk menambahkan value tambahan
+                                                foreach ($categories as $name) {
+                                                    $url = 'statis/blogkategori/' . $name;
+                                                    $data[$url] = $url;
+                                                }
+                                                $set('dynamicOptions', $data);
+                                            } else {
+                                                // Jika profil tidak ditemukan
+                                                $set('dynamicOptions', []);
+                                            }
                                         }
                                     })
                                     ->required(),
@@ -124,12 +145,15 @@ class AdjacencyResource extends Resource
                                             ->options(fn ($get) => $get('dynamicOptions') ?? [])
                                             ->visible(fn ($get) => $get('selectedOption') === 'linkinternal'),
 
-
-
                                             Forms\Components\TextInput::make('link')
                                             ->label('Input Teks')
                                             ->visible(fn ($get) => $get('selectedOption') === 'external')
                                             ->required(),
+
+                                            Forms\Components\Select::make('link')
+                                            ->label('Pilih Kategori')
+                                            ->options(fn ($get) => $get('dynamicOptions') ?? [])
+                                            ->visible(fn ($get) => $get('selectedOption') === 'kategori'),
                                     ]),
                         ]),
                 ])
@@ -140,10 +164,8 @@ class AdjacencyResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('iduser')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('idprofil')
+                
+                Tables\Columns\TextColumn::make('profil.slug')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')

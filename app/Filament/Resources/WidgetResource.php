@@ -40,7 +40,7 @@ class WidgetResource extends Resource
                     Forms\Components\Hidden::make('iduser')
                             ->default(Auth::user()->id),
                     Forms\Components\Hidden::make('idprofil')
-                            ->default(Auth::user()->id),
+                            ->default(Auth::user()->idprofil),
                     Forms\Components\TextInput::make('title')
                         ->required()
                         ->label('Judul')

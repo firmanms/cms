@@ -39,7 +39,7 @@ class CategoryResource extends Resource
                     Forms\Components\Hidden::make('iduser')
                             ->default(Auth::user()->id),
                     Forms\Components\Hidden::make('idprofil')
-                            ->default(Auth::user()->id),
+                            ->default(Auth::user()->idprofil),
                     Forms\Components\TextInput::make('name')
                         ->required()
                         ->maxLength(255),
@@ -53,10 +53,8 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('iduser')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('idprofil')
+                
+                Tables\Columns\TextColumn::make('profil.slug')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')

@@ -19,21 +19,21 @@ class StatsOverview extends BaseWidget
                 $user = Auth::user();
                 return Auth::user()->hasRole('super_admin') 
                     ? Post::count() // Total all posts for super_admin
-                    : Post::where('iduser', $user->id)->count(); // Posts specific to user
+                    : Post::where('idprofil', $user->idprofil)->count(); // Posts specific to user
             }),
 
             Stat::make('Total Halaman', function () {
                 $user = Auth::user();
                 return Auth::user()->hasRole('super_admin') 
                     ? Page::count() // Total all pages for super_admin
-                    : Page::where('iduser', $user->id)->count(); // Pages specific to user
+                    : Page::where('idprofil', $user->idprofil)->count(); // Pages specific to user
             }),
 
             Stat::make('Data Pegawai', function () {
                 $user = Auth::user();
                 return Auth::user()->hasRole('super_admin') 
                     ? Employee::count() // Total all employees for super_admin
-                    : Employee::where('iduser', $user->id)->count(); // Employees specific to user
+                    : Employee::where('idprofil', $user->idprofil)->count(); // Employees specific to user
             }),
         ];
 
@@ -47,3 +47,4 @@ class StatsOverview extends BaseWidget
         return $stats;
     }
 }
+

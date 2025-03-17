@@ -42,7 +42,7 @@ class PageResource extends Resource
                         Forms\Components\Hidden::make('iduser')
                             ->default(Auth::user()->id),
                         Forms\Components\Hidden::make('idprofil')
-                            ->default(Auth::user()->id),
+                            ->default(Auth::user()->idprofil),
                         Forms\Components\TextInput::make('title')
                             ->required()
                             ->label('Judul')
@@ -88,6 +88,7 @@ class PageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('title', 'asc')
             ->columns([
                 Tables\Columns\TextColumn::make('profil.slug')
                     ->numeric()
