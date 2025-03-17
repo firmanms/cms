@@ -39,14 +39,14 @@ class FrontendController extends Controller
         //profil
         
         $menu            = Adjacency::where('idprofil',$profil->id)->first();
-        $slide           = Slide::where('idprofil',$profil->id)->get();
+        $slide           = Slide::where('idprofil',$profil->id)->where('status',1)->get();
         $posting         = Post::with('categories')->where('idprofil',$profil->id)->where('status',1)->orderBy('published','desc')->get()->take(9);
-        $employee        = Employee::where('idprofil',$profil->id)->get();
+        $employee        = Employee::where('idprofil',$profil->id)->where('status',1)->get();
         // $posts           = Profil::where('id',$profil->id)->get();
         $page            = Page::where('idprofil',$profil->id)->get();
         // $artikel         = Post::where('idprofil',$profil->id)->get();
         $kategori_banner = Banner::distinct()->pluck('kategori');
-        $banner          = Banner::where('idprofil',$profil->id)->get();
+        $banner          = Banner::where('idprofil',$profil->id)->where('status',1)->get();
         // Ambil agenda dengan memastikan tidak termasuk yang dipublikasikan kemarin
         $yesterday = Carbon::yesterday()->startOfDay();
         $today = Carbon::today()->startOfDay();
@@ -89,8 +89,8 @@ class FrontendController extends Controller
     {
         $profil          = Profil::first();
         $menu            = Adjacency::where('idprofil',$profil->id)->first();
-        $artikel         = Post::with('categories')->where('idprofil', $profil->id)->orderBy('published','desc')->paginate(4);
-        $new_artikel     = Post::where('idprofil', $profil->id)->orderBy('published','desc')->get()->take(5);
+        $artikel         = Post::with('categories')->where('idprofil', $profil->id)->where('status',1)->orderBy('published','desc')->paginate(4);
+        $new_artikel     = Post::where('idprofil', $profil->id)->where('status',1)->orderBy('published','desc')->get()->take(5);
         $category      = Category::where('idprofil', $profil->id)->orderBy('name','asc')->get();
         // Mendapatkan informasi pagination
         $currentPage = $artikel->currentPage(); // Halaman saat ini
@@ -128,9 +128,10 @@ class FrontendController extends Controller
             $query->where('categories.id', $categoryfirst->id);
         })
         ->where('idprofil', $profil->id) // Pastikan $dinas terdefinisi
+        ->where('status',1)
         ->orderBy('published', 'desc')
         ->paginate(4);
-        $new_artikel     = Post::where('idprofil', $profil->id)->orderBy('published','desc')->get()->take(5);
+        $new_artikel     = Post::where('idprofil', $profil->id)->where('status',1)->orderBy('published','desc')->get()->take(5);
         $category      = Category::where('idprofil', $profil->id)->orderBy('name','asc')->get();
         // Mendapatkan informasi pagination
         $currentPage = $artikel->currentPage(); // Halaman saat ini
@@ -185,7 +186,7 @@ class FrontendController extends Controller
     {
         $profil          = Profil::first();
         $menu            = Adjacency::where('idprofil',$profil->id)->first();
-        $artikel         = Post::where('idprofil', $profil->id)->orderBy('published','desc')->get()->take(5);
+        $artikel         = Post::where('idprofil', $profil->id)->where('status',1)->orderBy('published','desc')->get()->take(5);
         $category        = Category::where('idprofil', $profil->id)->orderBy('name','asc')->get();
         $detail_blog     = Post::with('categories')->where('idprofil', $profil->id)->where('slug',$slug)->first();
         $category_blog   = Category::where('id', $detail_blog->idkategori)->first();
@@ -210,7 +211,7 @@ class FrontendController extends Controller
     {
         $profil          = Profil::first();
         $menu            = Adjacency::where('idprofil',$profil->id)->first();
-        $galeri          = Galery::where('idprofil', $profil->id)->orderBy('published','desc')->get();
+        $galeri          = Galery::where('idprofil', $profil->id)->where('status',1)->orderBy('published','desc')->get();
         $category        = Category::where('idprofil', $profil->id)->orderBy('name','asc')->get();
         
         // dd($menu);
