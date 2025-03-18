@@ -39,14 +39,14 @@ class FrontendController extends Controller
         //profil
         
         $menu            = Adjacency::where('idprofil',$profil->id)->first();
-        $slide           = Slide::where('idprofil',$profil->id)->where('status',1)->get();
+        $slide           = Slide::where('idprofil',$profil->id)->get();
         $posting         = Post::with('categories')->where('idprofil',$profil->id)->where('status',1)->orderBy('published','desc')->get()->take(9);
-        $employee        = Employee::where('idprofil',$profil->id)->where('status',1)->get();
+        $employee        = Employee::where('idprofil',$profil->id)->get();
         // $posts           = Profil::where('id',$profil->id)->get();
         $page            = Page::where('idprofil',$profil->id)->get();
         // $artikel         = Post::where('idprofil',$profil->id)->get();
         $kategori_banner = Banner::distinct()->pluck('kategori');
-        $banner          = Banner::where('idprofil',$profil->id)->where('status',1)->get();
+        $banner          = Banner::where('idprofil',$profil->id)->get();
         // Ambil agenda dengan memastikan tidak termasuk yang dipublikasikan kemarin
         $yesterday = Carbon::yesterday()->startOfDay();
         $today = Carbon::today()->startOfDay();
