@@ -78,21 +78,41 @@
                         <div class="d-flex justify-content-center">
                             <ul class="pagination">
                                 @if($currentPage > 1)
-                                    <li>
-                                        <a href="{{ $baseUrl }}?page={{ $currentPage - 1 }}" class="prev">Previous</a>
-                                    </li>
+                                    
+                                    {{-- <li>
+                                        <a href="{{ $baseUrl }}?page={{ $currentPage - 1 }}" class="prev"><<</a>
+                                    </li> --}}
                                 @endif
 
-                                @for($i = 1; $i <= $lastPage; $i++)
-                                    <li class="{{ $i == $currentPage ? 'active' : '' }}">
-                                        <a href="{{ $baseUrl }}?page={{ $i }}">{{ $i }}</a>
-                                    </li>
-                                @endfor
+                                @php
+                                    $range = 2; // Number of pages to show on each side of the current page
+                                    $start = max(1, $currentPage - $range);
+                                    $end = min($lastPage, $currentPage + $range);
+
+                                    // Ensure the first and last pages are always visible
+                                    if ($start > 1) {
+                                        echo '<li><a href="' . $baseUrl . '?page=1">1</a></li>';
+                                        if ($start > 2) {
+                                            echo '<li class="disabled"><span>...</span></li>';
+                                        }
+                                    }
+
+                                    for ($i = $start; $i <= $end; $i++) {
+                                        echo '<li class="' . ($i == $currentPage ? 'active' : '') . '"><a href="' . $baseUrl . '?page=' . $i . '">' . $i . '</a></li>';
+                                    }
+
+                                    if ($end < $lastPage) {
+                                        if ($end < $lastPage - 1) {
+                                            echo '<li class="disabled"><span>...</span></li>';
+                                        }
+                                        echo '<li><a href="' . $baseUrl . '?page=' . $lastPage . '">' . $lastPage . '</a></li>';
+                                    }
+                                @endphp
 
                                 @if($currentPage < $lastPage)
-                                    <li>
-                                        <a href="{{ $baseUrl }}?page={{ $currentPage + 1 }}" class="next">Next</a>
-                                    </li>
+                                    {{-- <li>
+                                        <a href="{{ $baseUrl }}?page={{ $currentPage + 1 }}" class="next">>></a>
+                                    </li> --}}
                                 @endif
                             </ul>
                         </div>

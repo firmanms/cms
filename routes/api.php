@@ -8,6 +8,7 @@ use App\Models\Complaint;
 use App\Models\Employee;
 use App\Models\Facilities;
 use App\Models\Faq;
+use App\Models\Fileupload;
 use App\Models\Galery;
 use App\Models\Page;
 use App\Models\Post;
@@ -281,6 +282,7 @@ Route::get('/blogkategori', function (Request $request) {
         'artikel'=>$artikela, 
         'new_artikel'=>$new_artikel,        
         'category'=>$category,
+        'categoryfirst'=>$categoryfirst,
         'base_url' => $pageartikel, // Tambahkan ini
         'current_page' => $artikel->currentPage(),
         'last_page' => $artikel->lastPage(),
@@ -476,14 +478,14 @@ Route::get('/layanan', function (Request $request) {
 })
 ->middleware('auth:sanctum');
 
-Route::get('/sarana',action:  function (Request $request) {
+Route::get('/sarana',  function (Request $request) {
     $domain = $request->getHost();    
     $referer = $request->headers->get('x-custom-header');
 
     // Cari Dinas berdasarkan domain
     $dinas = Profil::where('domain', $referer)->first();
-    // Log::info('Request Domain: ' . $domain);
-    // Log::info('Request Referer: ' . $referer);
+     Log::info('Request Domain: ' . $domain);
+     Log::info('Request Referer: ' . $referer);
 
     // dd($domain);
 
@@ -510,7 +512,56 @@ Route::get('/sarana',action:  function (Request $request) {
 })
 ->middleware('auth:sanctum');
 
-Route::get('/skm',action:  function (Request $request) {
+Route::get('/produkhukum',  function (Request $request) {
+    $domain = $request->getHost();    
+    $referer = $request->headers->get('x-custom-header');
+
+    // Cari Dinas berdasarkan domain
+    $dinas = Profil::where('domain', $referer)->first();
+     Log::info('Request Domain: ' . $domain);
+     Log::info('Request Referer: ' . $referer);
+
+    // dd($domain);
+
+    if (!$dinas) {
+        return response()->json(['message' => 'Dinas not found'], 404);
+    }
+
+
+    // Ambil post berdasarkan dinas_id
+    $profil = Profil::where('id', $dinas->id)->first();
+    $menu = Adjacency::where('idprofil', $dinas->id)->first();
+    // Cek apakah ada pencarian
+    $search = $request->input('search');
+    $fileupload = Fileupload::where('idprofil', $profil->id)
+                            ->where('kategori', 'Produk Hukum')
+                            ->when($search, function ($query, $search) {
+                                return $query->where('title', 'LIKE', "%{$search}%");
+                            })
+                            ->paginate(5); // Menampilkan 5 data per halaman
+    // Mendapatkan informasi pagination
+    $currentPage = $fileupload->currentPage(); // Halaman saat ini
+    $lastPage = $fileupload->lastPage(); // Total halaman
+    // Menentukan base URL
+    $baseUrl = $request->url(); // Mengambil URL saat ini
+    // dd($menu);
+        $jsonString = $menu['subject'];
+        $jsonStrings = json_encode($jsonString);
+
+        $menus = json_decode($jsonStrings, true);
+
+    return response()->json([
+        'profil'=>$profil,
+        'menus'=>$menus,
+        'fileupload'=>$fileupload, 
+        'currentPage'=>$currentPage,
+        'lastPage'=>$lastPage,
+        'baseUrl'=>$baseUrl,      
+        ]);
+})
+->middleware('auth:sanctum');
+
+Route::get('/skm',  function (Request $request) {
     $domain = $request->getHost();    
     $referer = $request->headers->get('x-custom-header');
 
