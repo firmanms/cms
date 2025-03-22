@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AmidEsfahani\FilamentTinyEditor\TinyEditor;
 use App\Filament\Resources\PostResource\Pages;
 use App\Filament\Resources\PostResource\RelationManagers;
 use App\Models\Post;
@@ -59,9 +60,9 @@ class PostResource extends Resource
                             ->required()
                             ->readOnly()
                             ->maxLength(255),
-                            Forms\Components\RichEditor::make('description')
+                            TinyEditor::make('description')
                             ->label('Deskripsi')
-                            ->fileAttachmentsDirectory('attachpage/'.Auth::user()->idprofil),
+                            ->fileAttachmentsDirectory('attachpost/'.Auth::user()->idprofil),
                         Forms\Components\Toggle::make('status')
                             ->onColor('success')
                             ->offColor('danger'),

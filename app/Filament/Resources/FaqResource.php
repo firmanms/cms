@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AmidEsfahani\FilamentTinyEditor\TinyEditor;
 use App\Filament\Resources\FaqResource\Pages;
 use App\Filament\Resources\FaqResource\RelationManagers;
 use App\Models\Faq;
@@ -40,42 +41,12 @@ class FaqResource extends Resource
                             ->default(Auth::user()->id),
                     Forms\Components\Hidden::make('idprofil')
                             ->default(Auth::user()->idprofil),
-                    Forms\Components\RichEditor::make('question')
+                    TinyEditor::make('question')
                             ->required()
-                            ->label('Pertanyaan')
-                            ->toolbarButtons([
-
-                                'blockquote',
-                                'bold',
-                                'bulletList',
-                                'h2',
-                                'h3',
-                                'italic',
-                                'link',
-                                'orderedList',
-                                'redo',
-                                'strike',
-                                'underline',
-                                'undo',
-                            ]),
-                    Forms\Components\RichEditor::make('answer')
+                            ->label('Pertanyaan'),
+                    TinyEditor::make('answer')
                             ->required()
-                            ->label('Jawaban')
-                            ->toolbarButtons([
-
-                                'blockquote',
-                                'bold',
-                                'bulletList',
-                                'h2',
-                                'h3',
-                                'italic',
-                                'link',
-                                'orderedList',
-                                'redo',
-                                'strike',
-                                'underline',
-                                'undo',
-                            ]),
+                            ->label('Jawaban'),
                 ])
             ]);
     }

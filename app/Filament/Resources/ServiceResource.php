@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AmidEsfahani\FilamentTinyEditor\TinyEditor;
 use App\Filament\Resources\ServiceResource\Pages;
 use App\Filament\Resources\ServiceResource\RelationManagers;
 use App\Models\Service;
@@ -58,35 +59,35 @@ class ServiceResource extends Resource
                             ->required()
                             ->readOnly()
                             ->maxLength(255),
-                        Forms\Components\RichEditor::make('requirement')
+                        TinyEditor::make('requirement')
                             ->label('Persyaratan')
                             ->required()
                             ->fileAttachmentsDirectory('attachrequirement/'.Auth::user()->idprofil)
-                            ->fileAttachmentsVisibility('private'),
-                        Forms\Components\RichEditor::make('procedure')
+                            ->fileAttachmentsVisibility('public'),
+                        TinyEditor::make('procedure')
                             ->label('Prosedur')
                             ->required()
                             ->fileAttachmentsDirectory('attachprocedure/'.Auth::user()->idprofil)
-                            ->fileAttachmentsVisibility('private'),
+                            ->fileAttachmentsVisibility('public'),
                         Forms\Components\TextInput::make('time')
                             ->label('Waktu Penyelesaian')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\RichEditor::make('cost')
+                        TinyEditor::make('cost')
                             ->label('Biaya')
                             ->required()
                             ->fileAttachmentsDirectory('attachcost/'.Auth::user()->idprofil)
-                            ->fileAttachmentsVisibility('private'),
-                        Forms\Components\RichEditor::make('product')
+                            ->fileAttachmentsVisibility('public'),
+                        TinyEditor::make('product')
                             ->label('Produk Pelayanan')
                             ->required()
                             ->fileAttachmentsDirectory('attachproduct/'.Auth::user()->idprofil)
-                            ->fileAttachmentsVisibility('private'),
-                        Forms\Components\RichEditor::make('complaint')
+                            ->fileAttachmentsVisibility('public'),
+                        TinyEditor::make('complaint')
                             ->label('Pengaduan')
                             ->required()
                             ->fileAttachmentsDirectory('attachcomplaintss/'.Auth::user()->idprofil)
-                            ->fileAttachmentsVisibility('private'),
+                            ->fileAttachmentsVisibility('public'),
                         Forms\Components\Toggle::make('status')
                             ->onColor('success')
                             ->offColor('danger'),

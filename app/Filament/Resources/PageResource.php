@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AmidEsfahani\FilamentTinyEditor\TinyEditor;
 use App\Filament\Resources\PageResource\Pages;
 use App\Filament\Resources\PageResource\RelationManagers;
 use App\Models\Page;
@@ -58,25 +59,8 @@ class PageResource extends Resource
                             ->required()
                             ->readOnly()
                             ->maxLength(255),
-                        Forms\Components\RichEditor::make('description')
+                        TinyEditor::make('description')
                             ->label('Deskripsi')
-                            ->toolbarButtons([
-                                'attachFiles',
-                                'blockquote',
-                                'bold',
-                                'bulletList',
-                                'codeBlock',
-                                'h2',
-                                'h3',
-                                'italic',
-                                'link',
-                                'paragraph',
-                                'orderedList',
-                                'redo',
-                                'strike',
-                                'underline',
-                                'undo',
-                            ])
                             ->fileAttachmentsDirectory('attachpage/'.Auth::user()->idprofil),
                         Forms\Components\Toggle::make('status')
                             ->onColor('success')

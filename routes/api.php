@@ -92,7 +92,7 @@ Route::get('/posts', function (Request $request) {
     $profil          = Profil::where('id', $dinas->id)->first();
     $menu            = Adjacency::where('idprofil', $dinas->id)->first();
     $slide           = Slide::where('idprofil', $dinas->id)->get();
-    $posting         = Post::with('categories')->where('idprofil', $dinas->id)->orderBy('published','desc')->get()->take(9);
+    $posting         = Post::with('categories')->where('idprofil', $dinas->id)->where('status',1)->orderBy('published','desc')->get()->take(9);
     $employee        = Employee::where('idprofil', $dinas->id)->get();
     // $posts           = Profil::where('id', $dinas->id)->get();
     $page            = Page::where('idprofil', $dinas->id)->get();
@@ -209,10 +209,10 @@ Route::get('/blog', function (Request $request) {
     $profil = Profil::where('id', $dinas->id)->first();
     $menu = Adjacency::where('idprofil', $dinas->id)->first();
     // $artikel = Post::where('idprofil', $dinas->id)->orderBy('published','desc')->get();
-    $artikel = Post::with('categories')->where('idprofil', $dinas->id)->orderBy('published','desc')->paginate(4);
+    $artikel = Post::with('categories')->where('idprofil', $dinas->id)->where('status',1)->orderBy('published','desc')->paginate(4);
     $artikela=$artikel->toArray();
     $pageartikel=$referer.'/page/statis/blog';
-    $new_artikel = Post::where('idprofil', $dinas->id)->orderBy('published','desc')->get()->take(5);
+    $new_artikel = Post::where('idprofil', $dinas->id)->where('status',1)->orderBy('published','desc')->get()->take(5);
     $category = Category::where('idprofil', $dinas->id)->orderBy('name','asc')->get();
     // dd($menu);
         $jsonString = $menu['subject'];
@@ -264,11 +264,12 @@ Route::get('/blogkategori', function (Request $request) {
         $query->where('categories.id', $categoryfirst->id);
     })
     ->where('idprofil', $dinas->id) // Pastikan $dinas terdefinisi
+    ->where('status',1)
     ->orderBy('published', 'desc')
     ->paginate(4);
     $artikela=$artikel->toArray();
     $pageartikel=$referer.'/page/statis/blog';
-    $new_artikel = Post::where('idprofil', $dinas->id)->orderBy('published','desc')->get()->take(5);
+    $new_artikel = Post::where('idprofil', $dinas->id)->where('status',1)->orderBy('published','desc')->get()->take(5);
     $category = Category::where('idprofil', $dinas->id)->orderBy('name','asc')->get();
     // dd($menu);
         $jsonString = $menu['subject'];
@@ -313,7 +314,7 @@ Route::get('/detailblog', function (Request $request) {
     // Ambil post berdasarkan dinas_id
     $profil = Profil::where('id', $dinas->id)->first();
     $menu = Adjacency::where('idprofil', $dinas->id)->first();
-    $artikel = Post::where('idprofil', $dinas->id)->orderBy('published','desc')->get()->take(5);
+    $artikel = Post::where('idprofil', $dinas->id)->where('status',1)->orderBy('published','desc')->get()->take(5);
     $category = Category::where('idprofil', $dinas->id)->orderBy('name','asc')->get();
     $detail_blog = Post::with('categories')->where('idprofil', $dinas->id)->where('slug',$slug)->first();
     $category_blog = Category::where('id', $detail_blog->idkategori)->first();
@@ -354,7 +355,7 @@ Route::get('/galeri', function (Request $request) {
     // Ambil post berdasarkan dinas_id
     $profil = Profil::where('id', $dinas->id)->first();
     $menu = Adjacency::where('idprofil', $dinas->id)->first();
-    $galeri = Galery::where('idprofil', $dinas->id)->orderBy('published','desc')->get();
+    $galeri = Galery::where('idprofil', $dinas->id)->where('status',1)->orderBy('published','desc')->get();
     $category = Category::where('idprofil', $dinas->id)->orderBy('name','asc')->get();
     // dd($menu);
         $jsonString = $menu['subject'];
@@ -538,7 +539,8 @@ Route::get('/produkhukum',  function (Request $request) {
                             ->when($search, function ($query, $search) {
                                 return $query->where('title', 'LIKE', "%{$search}%");
                             })
-                            ->paginate(5); // Menampilkan 5 data per halaman
+                            ->paginate(10); // Menampilkan 5 data per halaman
+    $pagefileupload=$referer.'/page/statis/produkhukum';
     // Mendapatkan informasi pagination
     $currentPage = $fileupload->currentPage(); // Halaman saat ini
     $lastPage = $fileupload->lastPage(); // Total halaman
@@ -554,9 +556,63 @@ Route::get('/produkhukum',  function (Request $request) {
         'profil'=>$profil,
         'menus'=>$menus,
         'fileupload'=>$fileupload, 
-        'currentPage'=>$currentPage,
-        'lastPage'=>$lastPage,
-        'baseUrl'=>$baseUrl,      
+        'base_url' => $pagefileupload, // Tambahkan ini
+        'current_page' => $fileupload->currentPage(),
+        'last_page' => $fileupload->lastPage(),
+        'next_page_url' => $fileupload->nextPageUrl(),
+        'prev_page_url' => $fileupload->previousPageUrl(),
+        ]);
+})
+->middleware('auth:sanctum');
+
+Route::get('/dokumenupload',  function (Request $request) {
+    $domain = $request->getHost();    
+    $referer = $request->headers->get('x-custom-header');
+
+    // Cari Dinas berdasarkan domain
+    $dinas = Profil::where('domain', $referer)->first();
+    //  Log::info('Request Domain: ' . $domain);
+    //  Log::info('Request Referer: ' . $referer);
+
+    // dd($domain);
+
+    if (!$dinas) {
+        return response()->json(['message' => 'Dinas not found'], 404);
+    }
+
+
+    // Ambil post berdasarkan dinas_id
+    $profil = Profil::where('id', $dinas->id)->first();
+    $menu = Adjacency::where('idprofil', $dinas->id)->first();
+    // Cek apakah ada pencarian
+    $search = $request->input('search');
+    $fileupload = Fileupload::where('idprofil', $profil->id)
+                            ->whereNot('kategori', 'Produk Hukum')
+                            ->when($search, function ($query, $search) {
+                                return $query->where('title', 'LIKE', "%{$search}%");
+                            })
+                            ->paginate(10); // Menampilkan 5 data per halaman
+    $pagefileupload=$referer.'/page/statis/dokumenupload';
+    // Mendapatkan informasi pagination
+    $currentPage = $fileupload->currentPage(); // Halaman saat ini
+    $lastPage = $fileupload->lastPage(); // Total halaman
+    // Menentukan base URL
+    $baseUrl = $request->url(); // Mengambil URL saat ini
+    // dd($menu);
+        $jsonString = $menu['subject'];
+        $jsonStrings = json_encode($jsonString);
+
+        $menus = json_decode($jsonStrings, true);
+
+    return response()->json([
+        'profil'=>$profil,
+        'menus'=>$menus,
+        'fileupload'=>$fileupload, 
+        'base_url' => $pagefileupload, // Tambahkan ini
+        'current_page' => $fileupload->currentPage(),
+        'last_page' => $fileupload->lastPage(),
+        'next_page_url' => $fileupload->nextPageUrl(),
+        'prev_page_url' => $fileupload->previousPageUrl(),
         ]);
 })
 ->middleware('auth:sanctum');

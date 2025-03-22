@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use AmidEsfahani\FilamentTinyEditor\TinyEditor;
 use App\Filament\Resources\ComplaintResource\Pages;
 use App\Filament\Resources\ComplaintResource\RelationManagers;
 use App\Models\Complaint;
@@ -115,21 +116,21 @@ class ComplaintResource extends Resource
                         ->maxLength(255),
 
                 ])->columns(2),
-                Forms\Components\RichEditor::make('jangka_waktu')
+                TinyEditor::make('jangka_waktu')
                         ->label('Jangka Waktu Penyelesaian')
                         ->required()
                         ->fileAttachmentsDirectory('jangkawaktuc/'.Auth::user()->idprofil)
-                        ->fileAttachmentsVisibility('private'),
-                Forms\Components\RichEditor::make('pengelola')
+                        ->fileAttachmentsVisibility('public'),
+                TinyEditor::make('pengelola')
                         ->label('Pengelola/admin')
                         ->required()
                         ->fileAttachmentsDirectory('attachpengelolac/'.Auth::user()->idprofil)
-                        ->fileAttachmentsVisibility('private'),
-                Forms\Components\RichEditor::make('prosedur')
+                        ->fileAttachmentsVisibility('public'),
+                TinyEditor::make('prosedur')
                         ->label('Prosedur')
                         ->required()
                         ->fileAttachmentsDirectory('attachprosedurc/'.Auth::user()->idprofil)
-                        ->fileAttachmentsVisibility('private'),
+                        ->fileAttachmentsVisibility('public'),
                 Forms\Components\FileUpload::make('image')
                         ->label('Pengelolaan Pengaduan')
                         ->helperText('Unggah gambar terkait Jumlah Pengelolaan pengaduan/Tindak Lanjut. Format yang didukung: JPG, PNG.')

@@ -279,7 +279,7 @@ class FrontendController extends Controller
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title', 'LIKE', "%{$search}%");
                                 })
-                                ->paginate(5); // Menampilkan 5 data per halaman
+                                ->paginate(10); // Menampilkan 5 data per halaman
         // Mendapatkan informasi pagination
         $currentPage = $fileupload->currentPage(); // Halaman saat ini
         $lastPage = $fileupload->lastPage(); // Total halaman
@@ -310,7 +310,7 @@ class FrontendController extends Controller
                                 ->when($search, function ($query, $search) {
                                     return $query->where('title', 'LIKE', "%{$search}%");
                                 })
-                                ->paginate(1); // Menampilkan 5 data per halaman
+                                ->paginate(10); // Menampilkan 5 data per halaman
         // Mendapatkan informasi pagination
         $currentPage = $fileupload->currentPage(); // Halaman saat ini
         $lastPage = $fileupload->lastPage(); // Total halaman

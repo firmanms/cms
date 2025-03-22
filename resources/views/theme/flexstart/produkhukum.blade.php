@@ -34,9 +34,10 @@
 
       <div class="container" data-aos="fade-up" style="max-width: 100%;max-height: 100%;overflow: auto;box-sizing: border-box; ">
        <!-- Pencarian -->
-            <form method="GET" action="{{ route('produkhukum') }}">
-                <div class="mb-3">
+            <form method="GET" action="{{ route('produkhukum') }}" class="mb-3">
+                <div class="input-group">
                     <input type="text" name="search" class="form-control" placeholder="Cari nama dokumen..." value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-primary">Cari</button>
                 </div>
             </form>
 
@@ -58,9 +59,15 @@
                                 <td>{{ $file->title }}</td>
                                 <td>{{ $file->kategori }}</td>
                                 <td>
-                                    <a href="{{ url('storage/' . $file->url) }}" class="btn btn-primary btn-sm" download>
-                                        Download
-                                    </a>
+                                     @if (strpos($file->url, 'http') === 0) <!-- Check if URL starts with 'http' -->
+                                        <a href="{{ $file->url }}" class="btn btn-primary btn-sm" download>
+                                            Download
+                                        </a>
+                                    @else
+                                        <a href="{{ url('storage/' . $file->url) }}" class="btn btn-primary btn-sm" download>
+                                            Download
+                                        </a>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
