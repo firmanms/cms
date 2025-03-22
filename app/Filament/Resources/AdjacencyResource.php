@@ -120,7 +120,7 @@ class AdjacencyResource extends Resource
                                         
                                             if ($profilId) {
                                                 // Ambil data dari database untuk select kedua (kondisi linkinternal)
-                                                $categories  = Category::where('idprofil', $profilId)->pluck('name')->toArray();
+                                                $categories  = Category::pluck('name')->toArray();
                                                 // Modifikasi data untuk menambahkan value tambahan
                                                 foreach ($categories as $name) {
                                                     $url = 'statis/blogkategori/' . $name;
