@@ -16,8 +16,8 @@ return new class extends Migration
             $table->integer('iduser');
             $table->integer('idprofil');
             $table->integer('idkategori');
-            $table->string('title');
-            $table->string('slug');
+            $table->mediumText('title');
+            $table->mediumText('slug');
             $table->longText('description');
             $table->date('published');
             $table->string('image')->nullable();            
